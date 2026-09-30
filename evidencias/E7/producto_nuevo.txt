@@ -1,0 +1,81 @@
+﻿**********************
+Inicio de la transcripción de Windows PowerShell
+Hora de inicio: 20260930033857
+Nombre de usuario: DESKTOP-EACG6VR\JONA
+Usuario RunAs: DESKTOP-EACG6VR\JONA
+Nombre de la configuración: 
+Máquina: DESKTOP-EACG6VR (Microsoft Windows NT 10.0.26200.0)
+Aplicación host: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+Id. de proceso: 15976
+PSVersion: 5.1.26100.9444
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9444
+BuildVersion: 10.0.26100.9444
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+La transcripción ha comenzado. El archivo de salida es evidencias\E7\producto_nuevo.txt
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> $id = 89   # <- pon el producto_id que te salio
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> $db = docker ps --filter "name=floci-rds-db" --format "{{.Names}}"
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> "Contenedor RDS: $db"
+Contenedor RDS: floci-rds-db-E1FE68A9A4C142FFA1023E25-9e8897
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> # 1. Prueba de que EKS atendio el registro (antes de reiniciar, porque los logs se pierden)
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\kubectl.ps1 -n lomax logs -l app=backend --prefix --tail=300 | Select-String "POST /productos"
+
+[pod/backend-5fcc587498-8tck7/backend] 2026-09-30 07:38:34,917 instancia=backend-5fcc587498-8tck7 POST
+/productos/89/imagen -> 200
+[pod/backend-5fcc587498-xc47h/backend] 2026-09-30 07:38:32,579 instancia=backend-5fcc587498-xc47h POST /productos
+-> 201
+
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> # 2. Datos en RDS, DynamoDB y S3
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> docker exec $db psql -U lomax -d lomax -c "SELECT producto_id,codigo,nombre,precio,estado FROM productos WHERE producto_id=$id;"
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\aws.ps1 dynamodb get-item --table-name producto_atributos --key ('{\"producto_id\":{\"S\":\"' + $id + '\"}}')
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\aws.ps1 s3api get-object --bucket lomax-miniaturas --key "miniaturas/$id.jpg" evidencias/E7/mini_nuevo.jpg
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> Add-Type -AssemblyName System.Drawing
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> $i = [System.Drawing.Image]::FromFile("$PWD\evidencias\E7\mini_nuevo.jpg"); "mini_nuevo $($i.Width)x$($i.Height)"; $i.Dispose()
+mini_nuevo 300x240
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> # 3. Aparece en el catalogo y en el detalle (via EKS)
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> curl.exe -s -w "`nHTTP %{http_code}`n" http://localhost:8081/api/productos/$id
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> # 4. Imagenes de los pods = digest publicado en ECR
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> $c2 = "custom-columns=POD:.metadata.name,IMAGEN:.spec.containers[0].image,DIGEST:.status.containerStatuses[0].imageID"
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\kubectl.ps1 -n lomax get pods -o $c2
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\aws.ps1 ecr describe-images --repository-name lomax-backend --query "imageDetails[].[imageTags[0],imageDigest]" --output text
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> # 5. Recrear todos los pods
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\kubectl.ps1 -n lomax rollout restart deployment backend proxy frontend
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\kubectl.ps1 -n lomax rollout status deployment backend
+Waiting for deployment "backend" rollout to finish: 1 old replicas are pending termination...
+deployment "backend" successfully rolled out
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\kubectl.ps1 -n lomax rollout status deployment proxy
+deployment "proxy" successfully rolled out
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\kubectl.ps1 -n lomax rollout status deployment frontend
+deployment "frontend" successfully rolled out
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\kubectl.ps1 -n lomax get pods
+NAME                        READY   STATUS        RESTARTS   AGE
+backend-5fcc587498-xc47h    1/1     Terminating   0          6m22s
+backend-845f8fc896-jbg74    1/1     Running       0          14s
+backend-845f8fc896-qfllg    1/1     Running       0          22s
+backend-845f8fc896-rbshq    1/1     Running       0          7s
+frontend-74f6997474-jsmgz   1/1     Running       0          21s
+proxy-7f4c5cdb88-vc9cs      1/1     Running       0          22s
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> Read-Host "Relanza el port-forward en la otra ventana y pulsa Enter aqui"
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> # 6. El mismo producto sigue disponible
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> curl.exe -s -w "`nHTTP %{http_code}`n" http://localhost:8081/api/productos/$id
+HTTP 200
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> docker exec $db psql -U lomax -d lomax -c "SELECT producto_id,codigo,nombre,estado FROM productos WHERE producto_id=$id;"
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> Stop-Transcript
+**********************
+Fin de la transcripción de Windows PowerShell
+Hora de finalización: 20260930034149
+**********************

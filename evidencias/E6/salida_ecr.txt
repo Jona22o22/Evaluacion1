@@ -1,0 +1,66 @@
+﻿**********************
+Inicio de la transcripción de Windows PowerShell
+Hora de inicio: 20260930023010
+Nombre de usuario: DESKTOP-EACG6VR\JONA
+Usuario RunAs: DESKTOP-EACG6VR\JONA
+Nombre de la configuración: 
+Máquina: DESKTOP-EACG6VR (Microsoft Windows NT 10.0.26200.0)
+Aplicación host: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+Id. de proceso: 3448
+PSVersion: 5.1.26100.9444
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9444
+BuildVersion: 10.0.26100.9444
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+La transcripción ha comenzado. El archivo de salida es evidencias\E6\salida_ecr.txt
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax>    .\06-ecr.ps1
+Version de imagenes: 991f1a0
+
+docker : 
+En C:\Users\JONA\Documents\EXAMENTECNO\lomax\aws.ps1: 6 Carácter: 5
++     docker run --rm --network lomax-net -e AWS_ACCESS_KEY_ID=test -e  ...
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+aws: [ERROR]: An error occurred (RepositoryAlreadyExistsException) when calling the CreateRepository operation: The 
+repository with name 'lomax-backend' already exists in the registry with id '000000000000'
+lomax-backend -> 000000000000.dkr.ecr.us-east-1.localhost:4566/lomax-backend
+docker : 
+En C:\Users\JONA\Documents\EXAMENTECNO\lomax\aws.ps1: 6 Carácter: 5
++     docker run --rm --network lomax-net -e AWS_ACCESS_KEY_ID=test -e  ...
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+aws: [ERROR]: An error occurred (RepositoryAlreadyExistsException) when calling the CreateRepository operation: The 
+repository with name 'lomax-frontend' already exists in the registry with id '000000000000'
+lomax-frontend -> 000000000000.dkr.ecr.us-east-1.localhost:4566/lomax-frontend
+docker : 
+En C:\Users\JONA\Documents\EXAMENTECNO\lomax\aws.ps1: 6 Carácter: 5
++     docker run --rm --network lomax-net -e AWS_ACCESS_KEY_ID=test -e  ...
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+aws: [ERROR]: An error occurred (RepositoryAlreadyExistsException) when calling the CreateRepository operation: The 
+repository with name 'lomax-proxy' already exists in the registry with id '000000000000'
+lomax-proxy -> 000000000000.dkr.ecr.us-east-1.localhost:4566/lomax-proxy
+Registro: 000000000000.dkr.ecr.us-east-1.localhost:4566
+
+
+
+
+
+
+
+
+Imagenes publicadas. Referencias guardadas en k8s\imagenes.env
+
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax>    Stop-Transcript
+**********************
+Fin de la transcripción de Windows PowerShell
+Hora de finalización: 20260930023030
+**********************

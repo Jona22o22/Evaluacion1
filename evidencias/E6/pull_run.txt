@@ -1,0 +1,46 @@
+﻿**********************
+Inicio de la transcripción de Windows PowerShell
+Hora de inicio: 20260930023320
+Nombre de usuario: DESKTOP-EACG6VR\JONA
+Usuario RunAs: DESKTOP-EACG6VR\JONA
+Nombre de la configuración: 
+Máquina: DESKTOP-EACG6VR (Microsoft Windows NT 10.0.26200.0)
+Aplicación host: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+Id. de proceso: 3448
+PSVersion: 5.1.26100.9444
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9444
+BuildVersion: 10.0.26100.9444
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+La transcripción ha comenzado. El archivo de salida es evidencias\E6\pull_run.txt
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> # Ver las tres imagenes en ECR
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\aws.ps1 ecr list-images --repository-name lomax-frontend
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\aws.ps1 ecr list-images --repository-name lomax-proxy
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> # Pull: borrar la copia local etiquetada y bajarla otra vez desde ECR
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> $img = "000000000000.dkr.ecr.us-east-1.localhost:4566/lomax-frontend:991f1a0"
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> docker rmi $img
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> docker pull $img
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> # Run: levantar un contenedor desde la imagen bajada de ECR
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> docker run -d --name lomax-frontend-ecr -p 8091:80 $img
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> Start-Sleep 3
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> curl.exe -s -o NUL -w "HTTP %{http_code}`n" http://localhost:8091
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> docker ps --filter "name=lomax-frontend-ecr"
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> # Limpieza
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> docker rm -f lomax-frontend-ecr
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> Stop-Transcript
+**********************
+Fin de la transcripción de Windows PowerShell
+Hora de finalización: 20260930023327
+**********************

@@ -1,0 +1,54 @@
+﻿**********************
+Inicio de la transcripción de Windows PowerShell
+Hora de inicio: 20260930034532
+Nombre de usuario: DESKTOP-EACG6VR\JONA
+Usuario RunAs: DESKTOP-EACG6VR\JONA
+Nombre de la configuración: 
+Máquina: DESKTOP-EACG6VR (Microsoft Windows NT 10.0.26200.0)
+Aplicación host: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+Id. de proceso: 15976
+PSVersion: 5.1.26100.9444
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9444
+BuildVersion: 10.0.26100.9444
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+La transcripción ha comenzado. El archivo de salida es evidencias\E2\verificacion_E2.txt
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> $db = docker ps --filter "name=floci-rds-db" --format "{{.Names}}"
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> "Contenedor RDS: $db"
+Contenedor RDS: floci-rds-db-E1FE68A9A4C142FFA1023E25-9e8897
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> docker exec $db psql -U lomax -d lomax -c "SELECT producto_id,codigo,nombre,precio,estado FROM productos ORDER BY 1 LIMIT 5;"
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> docker exec $db psql -U lomax -d lomax -c "SELECT count(*) AS total_antes FROM productos;"
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> docker exec $db psql -U lomax -d lomax -c "INSERT INTO productos(codigo,nombre,descripcion,precio,categoria_id) VALUES('X1','a','b',-1,1);"
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> docker exec $db psql -U lomax -d lomax -c "INSERT INTO productos(codigo,nombre,descripcion,precio,categoria_id) VALUES('LMX-TEC-001','a','b',1,1);"
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> docker exec $db psql -U lomax -d lomax -c "INSERT INTO productos(codigo,nombre,descripcion,precio,categoria_id) VALUES('X2','a','b',1,99);"
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> docker exec $db psql -U lomax -d lomax -c "SELECT count(*) AS total_despues FROM productos;"
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\aws.ps1 dynamodb get-item --table-name producto_atributos --key '{\"producto_id\":{\"S\":\"1\"}}'
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\aws.ps1 dynamodb get-item --table-name producto_atributos --key '{\"producto_id\":{\"S\":\"9\"}}'
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> docker restart $db
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> Start-Sleep 15
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> docker exec $db psql -U lomax -d lomax -c "SELECT producto_id,codigo,nombre,precio,estado FROM productos ORDER BY 1 LIMIT 5;"
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\aws.ps1 dynamodb get-item --table-name producto_atributos --key '{\"producto_id\":{\"S\":\"1\"}}'
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\04-cargar-datos.ps1
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> docker exec $db psql -U lomax -d lomax -c "SELECT count(*) AS total_tras_recarga FROM productos;"
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> Stop-Transcript
+**********************
+Fin de la transcripción de Windows PowerShell
+Hora de finalización: 20260930034721
+**********************

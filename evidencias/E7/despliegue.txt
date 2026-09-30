@@ -1,0 +1,45 @@
+﻿**********************
+Inicio de la transcripción de Windows PowerShell
+Hora de inicio: 20260930031758
+Nombre de usuario: DESKTOP-EACG6VR\JONA
+Usuario RunAs: DESKTOP-EACG6VR\JONA
+Nombre de la configuración: 
+Máquina: DESKTOP-EACG6VR (Microsoft Windows NT 10.0.26200.0)
+Aplicación host: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+Id. de proceso: 15976
+PSVersion: 5.1.26100.9444
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9444
+BuildVersion: 10.0.26100.9444
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+La transcripción ha comenzado. El archivo de salida es evidencias\E7\despliegue.txt
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\07-eks.ps1
+Subredes: subnet-default-us-east-1-c,subnet-default-us-east-1-b
+docker : 
+En C:\Users\JONA\Documents\EXAMENTECNO\lomax\aws.ps1: 6 Carácter: 5
++     docker run --rm --network lomax-net -e AWS_ACCESS_KEY_ID=test -e  ...
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+aws: [ERROR]: An error occurred (EntityAlreadyExists) when calling the CreateRole operation: Role with name eks-role 
+already exists.
+
+cluster ya existe o error (revisar arriba)
+estado cluster: ACTIVE
+
+kubeconfig en k8s\kubeconfig (si el servidor apunta a localhost, funciona desde este PC)
+
+IP de floci: 172.18.0.5
+
+
+
+Acceso: .\kubectl.ps1 -n lomax port-forward svc/proxy 8081:80   ->  http://localhost:8081
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> Stop-Transcript
+**********************
+Fin de la transcripción de Windows PowerShell
+Hora de finalización: 20260930031814
+**********************

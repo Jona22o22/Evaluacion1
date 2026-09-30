@@ -1,0 +1,73 @@
+﻿**********************
+Inicio de la transcripción de Windows PowerShell
+Hora de inicio: 20260930032119
+Nombre de usuario: DESKTOP-EACG6VR\JONA
+Usuario RunAs: DESKTOP-EACG6VR\JONA
+Nombre de la configuración: 
+Máquina: DESKTOP-EACG6VR (Microsoft Windows NT 10.0.26200.0)
+Aplicación host: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+Id. de proceso: 15976
+PSVersion: 5.1.26100.9444
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9444
+BuildVersion: 10.0.26100.9444
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+La transcripción ha comenzado. El archivo de salida es evidencias\E7\pruebas.txt
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> # 1. Estado inicial y UID del pod de backend
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\kubectl.ps1 -n lomax get pods -o wide
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\kubectl.ps1 -n lomax get pod -l app=backend -o custom-columns=NAME:.metadata.name,UID:.metadata.uid,IMAGEN:.spec.containers[0].image
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> # 2. Escalar 1 -> 3
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\kubectl.ps1 -n lomax scale deployment backend --replicas=3
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> Start-Sleep 20
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\kubectl.ps1 -n lomax get pods -o wide
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> # 3. Reparto de solicitudes entre pods
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> 1..12 | % { (Invoke-WebRequest -UseBasicParsing http://localhost:8081/api/instancia).Content }
+{"instancia":"backend-775f6c4f68-9n7fb"}
+{"instancia":"backend-775f6c4f68-9n7fb"}
+{"instancia":"backend-775f6c4f68-7q4ch"}
+{"instancia":"backend-775f6c4f68-9n7fb"}
+{"instancia":"backend-775f6c4f68-7q4ch"}
+{"instancia":"backend-775f6c4f68-xmshd"}
+{"instancia":"backend-775f6c4f68-xmshd"}
+{"instancia":"backend-775f6c4f68-9n7fb"}
+{"instancia":"backend-775f6c4f68-7q4ch"}
+{"instancia":"backend-775f6c4f68-9n7fb"}
+{"instancia":"backend-775f6c4f68-7q4ch"}
+{"instancia":"backend-775f6c4f68-7q4ch"}
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\kubectl.ps1 -n lomax logs -l app=backend --prefix --tail=5
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> # 4. Autorrecuperacion: anotar UID, borrar un pod, comparar
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> $pod = (.\kubectl.ps1 -n lomax get pod -l app=backend -o jsonpath='{.items[0].metadata.name}')
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> "Pod a borrar: $pod"
+Pod a borrar: backend-775f6c4f68-7q4ch
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\kubectl.ps1 -n lomax get pod -l app=backend -o custom-columns=NAME:.metadata.name,UID:.metadata.uid
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\kubectl.ps1 -n lomax delete pod $pod
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> Start-Sleep 15
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\kubectl.ps1 -n lomax get pod -l app=backend -o custom-columns=NAME:.metadata.name,UID:.metadata.uid
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\kubectl.ps1 -n lomax get pods
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> # 5. Persistencia: recrear todos los pods del backend y comprobar que los datos siguen
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\kubectl.ps1 -n lomax rollout restart deployment backend
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\kubectl.ps1 -n lomax rollout status deployment backend
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> curl.exe -s http://localhost:8081/api/categorias
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\kubectl.ps1 -n lomax get pods
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> Stop-Transcript
+**********************
+Fin de la transcripción de Windows PowerShell
+Hora de finalización: 20260930032219
+**********************

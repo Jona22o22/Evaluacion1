@@ -1,0 +1,50 @@
+﻿**********************
+Inicio de la transcripción de Windows PowerShell
+Hora de inicio: 20260930033205
+Nombre de usuario: DESKTOP-EACG6VR\JONA
+Usuario RunAs: DESKTOP-EACG6VR\JONA
+Nombre de la configuración: 
+Máquina: DESKTOP-EACG6VR (Microsoft Windows NT 10.0.26200.0)
+Aplicación host: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+Id. de proceso: 15976
+PSVersion: 5.1.26100.9444
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9444
+BuildVersion: 10.0.26100.9444
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+La transcripción ha comenzado. El archivo de salida es evidencias\E6\pull_run_todas.txt
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> $reg = "000000000000.dkr.ecr.us-east-1.localhost:4566"; $ver = "991f1a0"   # usa tu tag final
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> foreach ($n in "backend","frontend","proxy") { docker rmi "$reg/lomax-$($n):$ver" }
+
+
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> foreach ($n in "backend","frontend","proxy") { docker pull "$reg/lomax-$($n):$ver" }
+
+
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\aws.ps1 ecr describe-images --repository-name lomax-backend --query "imageDetails[].[imageTags[0],imageDigest]" --output text
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> # backend con las mismas variables del compose
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> $envs = (docker inspect lomax-backend-1 --format "{{json .Config.Env}}" | ConvertFrom-Json) | Where-Object { $_ -notmatch '^(PATH|PYTHON|LANG|GPG)' } | ForEach-Object { "-e"; $_ }
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> docker run -d --name backend-ecr --network lomax-net -p 8092:8000 @envs "$reg/lomax-backend:$ver"
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> docker run -d --name proxy-ecr --network lomax-net -p 8093:80 "$reg/lomax-proxy:$ver"
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> Start-Sleep 5
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> curl.exe -s http://localhost:8092/categorias
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> curl.exe -s http://localhost:8093/api/categorias
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> curl.exe -s -o NUL -w "frontend HTTP %{http_code}`n" http://localhost:8093/
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> docker rm -f backend-ecr proxy-ecr
+
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> Stop-Transcript
+**********************
+Fin de la transcripción de Windows PowerShell
+Hora de finalización: 20260930033214
+**********************
