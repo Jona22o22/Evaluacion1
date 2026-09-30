@@ -1,4 +1,4 @@
-k8s/kubeconfig
+k8s/kubeconfig*
 imagenes-offline/
 *.tar
 __pycache__/
