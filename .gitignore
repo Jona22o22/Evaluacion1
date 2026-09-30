@@ -2,3 +2,4 @@ k8s/kubeconfig*
 imagenes-offline/
 *.tar
 __pycache__/
+floci-data/
