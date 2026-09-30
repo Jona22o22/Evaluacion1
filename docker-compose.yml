@@ -1,0 +1,72 @@
+﻿# Lomax SA - entorno local FLOCI + aplicaciÃ³n (frontend, proxy, API)
+name: lomax
+
+networks:
+  default:
+    name: lomax-net
+
+volumes:
+  floci-data:
+
+services:
+  floci:
+    image: floci/floci:latest
+    container_name: floci
+    user: root
+    ports:
+      - "4566:4566"
+      - "7000-7099:7000-7099"        # puertos de RDS publicados por FLOCI (acceso desde el host)
+    environment:
+      FLOCI_HOSTNAME: floci
+      FLOCI_STORAGE_MODE: persistent
+      FLOCI_STORAGE_PERSISTENT_PATH: /app/data
+      FLOCI_SERVICES_LAMBDA_DOCKER_NETWORK: lomax-net
+      FLOCI_SERVICES_DOCKER_NETWORK: lomax-net
+    volumes:
+      - ./floci-data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  backend:
+    build: ./backend
+    image: lomax-backend:local
+    environment: &awsenv
+      AWS_ENDPOINT_URL: http://floci:4566
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      BUCKET_ORIGINALES: lomax-originales
+      BUCKET_MINIATURAS: lomax-miniaturas
+      DYNAMO_TABLE: producto_atributos
+      LAMBDA_NAME: lomax-miniatura
+      RDS_INSTANCE_ID: lomax-db
+      DB_USER: lomax
+      DB_PASSWORD: lomax12345
+      DB_NAME: lomax
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    image: lomax-frontend:local
+    restart: unless-stopped
+
+  proxy:
+    build: ./proxy
+    image: lomax-proxy:local
+    ports:
+      - "8080:80"
+    depends_on: [backend, frontend]
+    restart: unless-stopped
+
+  # Contenedor de herramientas (aprovisionar, cargar datos, pruebas). No requiere Python en el PC.
+  tools:
+    build: ./backend
+    image: lomax-backend:local
+    profiles: ["tools"]
+    working_dir: /work
+    environment:
+      <<: *awsenv
+      API_URL: http://proxy/api
+    volumes:
+      - ./:/work
+    entrypoint: ["python"]
+

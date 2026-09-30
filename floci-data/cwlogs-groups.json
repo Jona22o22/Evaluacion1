@@ -1,0 +1,18 @@
+{
+  "000000000000/us-east-1::/aws/lambda/lomax-miniatura" : {
+    "logGroupName" : "/aws/lambda/lomax-miniatura",
+    "createdTime" : 1790745720534,
+    "retentionInDays" : null,
+    "deletionProtectionEnabled" : false,
+    "kmsKeyId" : null,
+    "tags" : { }
+  },
+  "000000000000/us-east-1::/aws/rds/instance/lomax-db/error" : {
+    "logGroupName" : "/aws/rds/instance/lomax-db/error",
+    "createdTime" : 1790745593292,
+    "retentionInDays" : null,
+    "deletionProtectionEnabled" : false,
+    "kmsKeyId" : null,
+    "tags" : { }
+  }
+}

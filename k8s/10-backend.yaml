@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: lomax
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: backend}
+  template:
+    metadata:
+      labels: {app: backend}
+    spec:
+      hostAliases:
+        - ip: "__FLOCI_IP__"
+          hostnames: ["floci"]
+      containers:
+        - name: backend
+          image: __ECR_BACKEND__
+          imagePullPolicy: Always
+          ports: [{containerPort: 8000}]
+          env:
+            - {name: AWS_ENDPOINT_URL, value: "http://floci:4566"}
+            - {name: AWS_DEFAULT_REGION, value: "us-east-1"}
+            - {name: AWS_ACCESS_KEY_ID, value: "test"}
+            - {name: AWS_SECRET_ACCESS_KEY, value: "test"}
+            - {name: BUCKET_ORIGINALES, value: "lomax-originales"}
+            - {name: BUCKET_MINIATURAS, value: "lomax-miniaturas"}
+            - {name: DYNAMO_TABLE, value: "producto_atributos"}
+            - {name: LAMBDA_NAME, value: "lomax-miniatura"}
+            - {name: RDS_INSTANCE_ID, value: "lomax-db"}
+          readinessProbe:
+            httpGet: {path: /salud, port: 8000}
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: {path: /salud, port: 8000}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: lomax
+spec:
+  selector: {app: backend}
+  ports: [{port: 8000, targetPort: 8000}]

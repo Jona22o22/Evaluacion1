@@ -1,0 +1,103 @@
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\aws.ps1 s3 ls
+2026-09-30 05:19:35 lomax-originales
+2026-09-30 05:19:55 awslambda-us-east-1-tasks
+2026-09-30 05:19:35 lomax-miniaturas
+
+Suggestion [3,General]: No se encontró el comando aws, pero existe en la ubicación actual. Windows PowerShell no carga comandos de la ubicación actual de forma predeterminada. Si confía en este comando, escriba ".\aws". Vea "get-help about_Command_Precedence" para obtener información más detallada.
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\aws.ps1 s3 ls s3://lomax-originales/originales/
+2026-09-30 05:21:32      55248 1.jpg
+2026-09-30 05:22:02      54865 10.jpg
+2026-09-30 05:22:02      54961 11.jpg
+2026-09-30 05:22:02      54177 12.jpg
+2026-09-30 05:22:03      54992 13.jpg
+2026-09-30 05:22:03      53846 14.jpg
+2026-09-30 05:22:03      55247 15.jpg
+2026-09-30 05:22:03      55228 16.jpg
+2026-09-30 05:22:03      53813 17.jpg
+2026-09-30 05:22:03      54805 18.jpg
+2026-09-30 05:22:04      54061 19.jpg
+2026-09-30 05:22:01      54095 2.jpg
+2026-09-30 05:22:04      55020 20.jpg
+2026-09-30 05:26:27      34095 21.jpg
+2026-09-30 05:30:19      15629 23.jpg
+2026-09-30 05:22:01      54593 3.jpg
+2026-09-30 05:22:01      53962 4.jpg
+2026-09-30 05:22:01      55338 5.jpg
+2026-09-30 05:22:01      55479 6.jpg
+2026-09-30 05:22:02      54312 7.jpg
+2026-09-30 05:22:02      54947 8.jpg
+2026-09-30 05:22:02      53880 9.jpg
+
+Suggestion [3,General]: No se encontró el comando aws, pero existe en la ubicación actual. Windows PowerShell no carga comandos de la ubicación actual de forma predeterminada. Si confía en este comando, escriba ".\aws". Vea "get-help about_Command_Precedence" para obtener información más detallada.
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\aws.ps1 s3 ls s3://lomax-miniaturas/miniaturas/
+2026-09-30 05:22:00       7016 1.jpg
+2026-09-30 05:22:02       6920 10.jpg
+2026-09-30 05:22:02       7018 11.jpg
+2026-09-30 05:22:02       6738 12.jpg
+2026-09-30 05:22:03       6970 13.jpg
+2026-09-30 05:22:03       6755 14.jpg
+2026-09-30 05:22:03       6956 15.jpg
+2026-09-30 05:22:03       7034 16.jpg
+2026-09-30 05:22:03       6695 17.jpg
+2026-09-30 05:22:03       6953 18.jpg
+2026-09-30 05:22:04       6756 19.jpg
+2026-09-30 05:22:01       6706 2.jpg
+2026-09-30 05:22:04       6925 20.jpg
+2026-09-30 05:26:27      14277 21.jpg
+2026-09-30 05:30:19       1617 23.jpg
+2026-09-30 05:22:01       6956 3.jpg
+2026-09-30 05:22:01       6760 4.jpg
+2026-09-30 05:22:01       6937 5.jpg
+2026-09-30 05:22:01       7063 6.jpg
+2026-09-30 05:22:02       6733 7.jpg
+2026-09-30 05:22:02       6979 8.jpg
+2026-09-30 05:22:02       6763 9.jpg
+
+Suggestion [3,General]: No se encontró el comando aws, pero existe en la ubicación actual. Windows PowerShell no carga comandos de la ubicación actual de forma predeterminada. Si confía en este comando, escriba ".\aws". Vea "get-help about_Command_Precedence" para obtener información más detallada.
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> '{"producto_id":"1","bucket":"lomax-originales","key":"originales/1.jpg","bucket_miniaturas":"lomax-miniaturas"}' | Set-Content -Encoding ascii evidencias\E3\evento.json
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax>
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\aws.ps1 lambda invoke --function-name lomax-miniatura --cli-binary-format raw-in-base64-out --payload file://evidencias/E3/evento.json evidencias/E3/salida.json
+{
+    "StatusCode": 200,
+    "ExecutedVersion": "$LATEST"
+}
+
+Suggestion [3,General]: No se encontró el comando aws, pero existe en la ubicación actual. Windows PowerShell no carga comandos de la ubicación actual de forma predeterminada. Si confía en este comando, escriba ".\aws". Vea "get-help about_Command_Precedence" para obtener información más detallada.
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax>
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> Get-Content evidencias\E3\salida.json
+{"ok": true, "estado": "LISTA", "producto_id": "1", "miniatura_key": "miniaturas/1.jpg", "original": [1200, 800], "miniatura": [300, 200]}
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\aws.ps1 s3api get-object --bucket lomax-miniaturas --key miniaturas/1.jpg evidencias/E3/mini1.jpg
+{
+    "AcceptRanges": "bytes",
+    "LastModified": "2026-09-30T05:41:38+00:00",
+    "ContentLength": 7016,
+    "ETag": "\"7a53d4ec05bb2729fb02291ffc7e7fa1\"",
+    "ChecksumCRC32": "7RXhrg==",
+    "ChecksumType": "FULL_OBJECT",
+    "ContentType": "image/jpeg",
+    "Metadata": {},
+    "StorageClass": "STANDARD"
+}
+
+Suggestion [3,General]: No se encontró el comando aws, pero existe en la ubicación actual. Windows PowerShell no carga comandos de la ubicación actual de forma predeterminada. Si confía en este comando, escriba ".\aws". Vea "get-help about_Command_Precedence" para obtener información más detallada.
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax>
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> .\aws.ps1 s3api get-object --bucket lomax-originales --key originales/1.jpg evidencias/E3/orig1.jpg
+{
+    "AcceptRanges": "bytes",
+    "LastModified": "2026-09-30T05:21:32+00:00",
+    "ContentLength": 55248,
+    "ETag": "\"76aa251001c2e68b1cd39fbc7878f556\"",
+    "ChecksumCRC64NVME": "WBCEEXd9iYc=",
+    "ChecksumType": "FULL_OBJECT",
+    "ContentType": "image/jpeg",
+    "Metadata": {},
+    "StorageClass": "STANDARD"
+}
+
+Suggestion [3,General]: No se encontró el comando aws, pero existe en la ubicación actual. Windows PowerShell no carga comandos de la ubicación actual de forma predeterminada. Si confía en este comando, escriba ".\aws". Vea "get-help about_Command_Precedence" para obtener información más detallada.
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax>
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> Add-Type -AssemblyName System.Drawing
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax> foreach($f in "orig1","mini1"){ $i=[System.Drawing.Image]::FromFile("$PWD\evidencias\E3\$f.jpg"); "$f $($i.Width)x$($i.Height)"; $i.Dispose() }
+orig1 1200x800
+mini1 300x200
+PS C:\Users\JONA\Documents\EXAMENTECNO\lomax>

@@ -1,0 +1,36 @@
+[OK] GET /categorias 200 [{"categoria_id":1,"nombre":"Teclados"},{"categoria_id":2,"nombre":"Pantallas"},{"categoria_id":3,"n
+[OK] POST /productos 201 PENDIENTE {"estado":"PENDIENTE","producto_id":23}
+
+[OK] RDS: fila PENDIENTE PENDIENTE
+[OK] DynamoDB: atributos guardados {'producto_id': '23', 'atributos': {'conexion': 'USB', 'distribucion': 'ES'}, 'estado_procesamiento': 'PENDIENTE'}
+[OK] POST duplicado 409 {"error":"C\u00f3digo de producto duplicado","estado":"PENDIENTE","paso":"rds","producto_id":23}
+
+[OK] precio negativo 400 {"error":"precio debe ser un n\u00famero mayor o igual a 0","paso":"validacion"}
+
+[OK] categoría inexistente 400 {"error":"La categor\u00eda no existe","paso":"validacion"}
+
+[OK] GET /productos/{id} 200 PENDIENTE 
+[OK] GET /productos/{id} inexistente 404 
+[OK] reprocesar sin original 409 {"error":"No existe imagen original para este producto","estado":"PENDIENTE","paso":"s3","producto_id":23}
+
+[OK] GET imagen sin miniatura 404 
+[OK] archivo no imagen 415 {"error":"Formato no permitido: solo JPEG o PNG","paso":"validacion"}
+
+[OK] archivo >5MB 413 {"error":"Archivo mayor a 5 MB","paso":"validacion"}
+
+[OK] JPEG corrupto 400 (paso lambda) {"error":"Imagen inv\u00e1lida: cannot identify image file <_io.BytesIO object at 0x78124af071a0>","estado":"PENDIENTE","estado_procesamiento":"ERROR","paso":"lambda","producto_id":23}
+
+[OK] Sigue PENDIENTE tras imagen inválida PENDIENTE
+[OK] PENDIENTE no aparece en catálogo 
+[OK] POST imagen válida 200 PUBLICADO {"estado":"PUBLICADO","estado_procesamiento":"LISTA","miniatura_key":"miniaturas/23.jpg","producto_id":23}
+
+[OK] RDS: fila PUBLICADO PUBLICADO
+[OK] DynamoDB: estado LISTA + miniatura_key {'producto_id': '23', 'atributos': {'conexion': 'USB', 'distribucion': 'ES'}, 'estado_procesamiento': 'LISTA', 'imagen_original_key': 'originales/23.jpg', 'miniatura_key': 'miniaturas/23.jpg'}
+[OK] reprocesar 200 {"estado":"PUBLICADO","estado_procesamiento":"LISTA","miniatura_key":"miniaturas/23.jpg","producto_id":23}
+
+[OK] S3: reprocesar no duplica objetos 22 -> 22
+[OK] GET imagen 200 image/jpeg 300x200 (300, 200)
+[OK] Bytes del endpoint == bytes descargados de S3 
+[OK] GET /productos solo publicados e incluye el nuevo 22 publicados
+
+RESULTADO: TODO OK

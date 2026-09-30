@@ -1,0 +1,13 @@
+{
+  "000000000000/arn:aws:resource-explorer-2:us-east-1:000000000000:index/ee58d7d1-f5db-487d-8361-f1f664e18a5d" : {
+    "arn" : "arn:aws:resource-explorer-2:us-east-1:000000000000:index/ee58d7d1-f5db-487d-8361-f1f664e18a5d",
+    "region" : "us-east-1",
+    "type" : "AGGREGATOR",
+    "state" : "ACTIVE",
+    "tags" : { },
+    "createdAt" : "2026-09-30T05:16:42.348342871Z",
+    "lastUpdatedAt" : "2026-09-30T05:16:42.348342871Z",
+    "replicatingFrom" : [ ],
+    "replicatingTo" : [ ]
+  }
+}
